@@ -11,7 +11,7 @@ from controller import Controller
 
 class MP3Player:
     RUN_DIR = '/etc/jukebox/'
-    MUSIC_DIR = '/etc/jukebox/album/'
+    MUSIC_DIR = '/var/music/'
     music_list = []
     music_volume = 0.5
     music_index = 0
@@ -44,7 +44,7 @@ class MP3Player:
             print('[FAIL] Load music index')
 
     def volume_up(self):
-        self.music_volume += 0.01
+        self.music_volume += 0.001
         if self.music_volume > 1:
             self.music_volume = 1
         try:
@@ -53,7 +53,7 @@ class MP3Player:
             pass
 
     def volume_down(self):
-        self.music_volume -= 0.01
+        self.music_volume -= 0.001
 
         if self.music_volume < 0:
             self.music_volume = 0
