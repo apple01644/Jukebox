@@ -10,8 +10,8 @@ from controller import Controller
 
 
 class MP3Player:
-    RUN_DIR = '/home/pi/Desktop/example/'
-    MUSIC_DIR = '/home/pi/Desktop/example/album/'
+    RUN_DIR = '/etc/jukebox/'
+    MUSIC_DIR = '/etc/jukebox/album/'
     music_list = []
     music_volume = 0.5
     music_index = 0
