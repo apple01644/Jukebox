@@ -7,8 +7,8 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-User=centos
-ExecStart=python3 /etc/jukebox/jukebox.py
+User=pi
+ExecStart=/usr/bin/python3 /etc/jukebox/jukebox.py
 
 [Install]
 WantedBy=multi-user.target
