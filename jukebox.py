@@ -44,7 +44,7 @@ class MP3Player:
             print('[FAIL] Load music index')
 
     def volume_up(self):
-        self.music_volume += 0.001
+        self.music_volume += 0.003
         if self.music_volume > 1:
             self.music_volume = 1
         try:
@@ -53,7 +53,7 @@ class MP3Player:
             pass
 
     def volume_down(self):
-        self.music_volume -= 0.001
+        self.music_volume -= 0.003
 
         if self.music_volume < 0:
             self.music_volume = 0
@@ -97,7 +97,7 @@ class MP3Player:
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play()
 
-        time.sleep(1)
+        time.sleep(3)
         self.play_song()
 
         self.controller = Controller(self)
