@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 sudo mkdir /etc/jukebox
-sudo chmod 666 /etc/jukebox
 
 mkdir /etc/jukebox/album
 cp start.mp3 /etc/jukebox/start.mp3
