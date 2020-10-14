@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+sudo rm -rf /etc/jukebox
 sudo mkdir /etc/jukebox
 
 mkdir /etc/jukebox/album

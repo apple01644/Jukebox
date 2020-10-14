@@ -1,7 +1,9 @@
 [Unit]
 Description=Jukebox service
 After=networking.service
-StartLimitIntervalSec=0[Service]
+StartLimitIntervalSec=0
+
+[Service]
 Type=simple
 Restart=always
 RestartSec=1

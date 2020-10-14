@@ -20,7 +20,7 @@ if os.name == 'posix':
             self.mp3_player = mp3_player
 
             gpio.setmode(gpio.BOARD)
-            gpio.setwarnings(False)a
+            gpio.setwarnings(False)
 
             def on_click_prev(ch):
                 mp3_player.prev_song()

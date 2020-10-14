@@ -62,25 +62,23 @@ class MP3Player:
         except:
             pass
 
-    def prev_song(self):
-        self.music_index = (self.music_index - 1 + len(self.music_list)) % len(self.music_list)
+    def play_song(self):
         path = self.MUSIC_DIR + self.music_list[self.music_index]
         print(self.music_list[self.music_index], path)
         pygame.mixer.music.load(path)
         pygame.mixer.music.set_volume(self.music_volume)
         pygame.mixer.music.play()
         self.music_paused = False
+
+    def prev_song(self):
+        self.music_index = (self.music_index - 1 + len(self.music_list)) % len(self.music_list)
+        self.play_song()
         with open('music_index.dat', 'w') as f:
             f.write(str(self.music_index))
 
     def next_song(self):
         self.music_index = (self.music_index + 1) % len(self.music_list)
-        path = self.MUSIC_DIR + self.music_list[self.music_index]
-        print(self.music_list[self.music_index], path)
-        pygame.mixer.music.load(path)
-        pygame.mixer.music.set_volume(self.music_volume)
-        pygame.mixer.music.play()
-        self.music_paused = False
+        self.play_song()
         with open('music_index.dat', 'w') as f:
             f.write(str(self.music_index))
 
@@ -98,6 +96,9 @@ class MP3Player:
         pygame.mixer.music.load(self.RUN_DIR + '/start.mp3')
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play()
+
+        time.sleep(1)
+        self.play_song()
 
         self.controller = Controller(self)
         while True:
