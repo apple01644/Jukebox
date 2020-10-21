@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-User=root
+User=pi
 ExecStart=/usr/bin/python3 /etc/jukebox/jukebox.py
 
 [Install]
