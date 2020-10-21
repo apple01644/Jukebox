@@ -1,113 +1,113 @@
-#!python3
-
-import os
-import sys
 import time
-
 import pygame
+import random
+import traceback
+import os
 
 from controller import Controller
+from music_loader import get_music_list
+
+music_dir = '/var/music'
+run_dir = '/etc/jukebox'
+
+
+def print_except_trace():
+    traceback.format_exc()
 
 
 class MP3Player:
-    RUN_DIR = '/etc/jukebox/'
-    MUSIC_DIR = '/var/music/'
     music_list = []
     music_volume = 0.5
-    music_index = 0
     controller = None
-    music_paused = False
+    music = None
 
     def __init__(self):
-        print('[TRY] file loaded')
-        while True:
-            if os.path.isdir(self.MUSIC_DIR):
-                for f in os.listdir(self.MUSIC_DIR):
-                    if f.find('.mp3') != -1:
-                        self.music_list.append(f)
-            if len(self.music_list) > 0:
-                break
-            else:
-                time.sleep(0.1)
-        print('[SUCC] file loaded')
+        self.music = pygame.mixer.music
+        self.music_list = get_music_list(music_dir)
+        if len(self.music_list) == 0:
+            self.play_error_sound(2)
 
-        print('[TRY] Load music index')
-        try:
-            with open('music_index.dat', 'r') as f:
-                data = f.read()
-                if data:
-                    self.music_index = int(data)
-                    if self.music_index >= len(self.music_list):
-                        self.music_index = 0
-            print('[SUCC] Load music index')
-        except:
-            print('[FAIL] Load music index')
+    def play_error_sound(self, times):
+        for _ in range(times):
+            self.music.load(f'{run_dir}/error.mp3')
+            self.music.play()
+            time.sleep(0.77)
 
     def volume_up(self):
-        self.music_volume += 0.003
-        if self.music_volume > 1:
-            self.music_volume = 1
-        try:
-            pygame.mixer.music.set_volume(self.music_volume)
-        except:
-            pass
+        self.music_volume = min(self.music_volume + 0.003, 1)
+        pygame.mixer.music.set_volume(self.music_volume)
 
     def volume_down(self):
-        self.music_volume -= 0.003
-
-        if self.music_volume < 0:
-            self.music_volume = 0
-        try:
-            pygame.mixer.music.set_volume(self.music_volume)
-        except:
-            pass
-
-    def play_song(self):
-        path = self.MUSIC_DIR + self.music_list[self.music_index]
-        print(self.music_list[self.music_index], path)
-        pygame.mixer.music.load(path)
+        self.music_volume = max(self.music_volume - 0.003, 0)
         pygame.mixer.music.set_volume(self.music_volume)
-        pygame.mixer.music.play()
-        self.music_paused = False
+
+    def get_music_index(self):
+        try:
+            with open(f'{run_dir}/music_index.dat', 'r') as f:
+                return int(f.read())
+        except:
+            print_except_trace()
+            return 0
+
+    def set_music_index(self, new_music_index):
+        while new_music_index < 0:
+            new_music_index += len(self.music_list)
+        while new_music_index >= len(self.music_list):
+            new_music_index -= len(self.music_list)
+        with open(f'{run_dir}/music_index.dat', 'w') as f:
+            f.write(str(new_music_index))
+
+    music_index = property(get_music_index, set_music_index)
+
+    @property
+    def now_music_path(self):
+        if os.name == 'nt':
+            return self.music_list[self.music_index].replace('/', '\\')
+        else:
+            return self.music_list[self.music_index]
+
+    def play_song_by_index(self):
+        print('Play', self.now_music_path)
+        try:
+            pygame.mixer.music.load(self.now_music_path)
+            pygame.mixer.music.play()
+            print('Success Play', self.now_music_path)
+        except:
+            self.play_error_sound(1)
+            print_except_trace()
 
     def prev_song(self):
-        self.music_index = (self.music_index - 1 + len(self.music_list)) % len(self.music_list)
-        self.play_song()
-        with open('music_index.dat', 'w') as f:
-            f.write(str(self.music_index))
+        self.music_index = self.music_index - 1
+        self.play_song_by_index()
 
     def next_song(self):
-        self.music_index = (self.music_index + 1) % len(self.music_list)
-        self.play_song()
-        with open('music_index.dat', 'w') as f:
-            f.write(str(self.music_index))
+        self.music_index = self.music_index + 1
+        self.play_song_by_index()
 
     def big_button(self):
-        if self.music_paused:
-            pygame.mixer.music.unpause()
-        else:
-            pygame.mixer.music.pause()
-        self.music_paused = not self.music_paused
+        self.music_index = random.randint(0, len(self.music_list) - 1)
+        self.play_song_by_index()
 
     def main_loop(self):
-        pygame.init()
-        pygame.mixer.init()
-
-        pygame.mixer.music.load(self.RUN_DIR + '/start.mp3')
-        pygame.mixer.music.set_volume(0.5)
-        pygame.mixer.music.play()
-
+        self.music.load(f'{run_dir}/start.mp3')
+        self.music.set_volume(1)
+        print('start')
+        self.music.play()
         time.sleep(3)
-        self.play_song()
+        self.play_song_by_index()
 
         self.controller = Controller(self)
         while True:
             self.controller.loop()
-        pygame.mixer.quit()
-        pygame.quit()
+            if self.music.get_busy() == 0:
+                self.next_song()
 
 
 mp3_player = MP3Player()
 
 if __name__ == '__main__':
+    pygame.init()
+    pygame.mixer.init()
     mp3_player.main_loop()
+    pygame.mixer.quit()
+    pygame.quit()
