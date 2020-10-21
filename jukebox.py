@@ -7,8 +7,12 @@ import os
 from controller import Controller
 from music_loader import get_music_list
 
-music_dir = '/var/music'
-run_dir = '/etc/jukebox'
+if os.name == 'posix':
+    music_dir = '/var/music/'
+    run_dir = '/etc/jukebox/'
+elif os.name == 'nt':
+    music_dir = 'C:/Users/apple/Desktop/as/'
+    run_dir = 'F:/Repositories/Jukebox/'
 
 
 def print_except_trace():
@@ -22,6 +26,8 @@ class MP3Player:
     music = None
 
     def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
         self.music = pygame.mixer.music
         self.music_list = get_music_list(music_dir)
         if len(self.music_list) == 0:
@@ -29,7 +35,7 @@ class MP3Player:
 
     def play_error_sound(self, times):
         for _ in range(times):
-            self.music.load(f'{run_dir}/error.mp3')
+            self.music.load(run_dir + 'error.mp3')
             self.music.play()
             time.sleep(0.77)
 
@@ -43,7 +49,7 @@ class MP3Player:
 
     def get_music_index(self):
         try:
-            with open(f'{run_dir}/music_index.dat', 'r') as f:
+            with open(run_dir + 'music_index.dat', 'r') as f:
                 return int(f.read())
         except:
             print_except_trace()
@@ -54,7 +60,7 @@ class MP3Player:
             new_music_index += len(self.music_list)
         while new_music_index >= len(self.music_list):
             new_music_index -= len(self.music_list)
-        with open(f'{run_dir}/music_index.dat', 'w') as f:
+        with open(run_dir + 'music_index.dat', 'w') as f:
             f.write(str(new_music_index))
 
     music_index = property(get_music_index, set_music_index)
@@ -89,7 +95,7 @@ class MP3Player:
         self.play_song_by_index()
 
     def main_loop(self):
-        self.music.load(f'{run_dir}/start.mp3')
+        self.music.load(run_dir + 'start.mp3')
         self.music.set_volume(1)
         print('start')
         self.music.play()
@@ -102,12 +108,12 @@ class MP3Player:
             if self.music.get_busy() == 0:
                 self.next_song()
 
+    def __del__(self):
+        pygame.mixer.quit()
+        pygame.quit()
+
 
 mp3_player = MP3Player()
 
 if __name__ == '__main__':
-    pygame.init()
-    pygame.mixer.init()
     mp3_player.main_loop()
-    pygame.mixer.quit()
-    pygame.quit()
