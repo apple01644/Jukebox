@@ -21,7 +21,7 @@ def print_except_trace():
 
 class MP3Player:
     music_list = []
-    music_volume = 0.5
+    music_volume = 0.1
     controller = None
     music = None
 
@@ -75,11 +75,12 @@ class MP3Player:
     def play_song_by_index(self):
         print('Play', self.now_music_path)
         try:
-            pygame.mixer.music.load(self.now_music_path)
-            pygame.mixer.music.play()
+            self.music.load(self.now_music_path)
+            self.music.play()
             print('Success Play', self.now_music_path)
         except:
-            self.play_error_sound(1)
+            self.play_error_so
+            und(1)
             print_except_trace()
 
     def prev_song(self):
@@ -96,7 +97,7 @@ class MP3Player:
 
     def main_loop(self):
         self.music.load(run_dir + 'start.mp3')
-        self.music.set_volume(1)
+        music.set_volume(self.music_volume)
         print('start')
         self.music.play()
         time.sleep(3)
