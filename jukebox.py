@@ -41,11 +41,11 @@ class MP3Player:
 
     def volume_up(self):
         self.music_volume = min(self.music_volume + 0.003, 1)
-        pygame.mixer.music.set_volume(self.music_volume)
+        self.music.set_volume(self.music_volume)
 
     def volume_down(self):
         self.music_volume = max(self.music_volume - 0.003, 0)
-        pygame.mixer.music.set_volume(self.music_volume)
+        self.music.set_volume(self.music_volume)
 
     def get_music_index(self):
         try:
@@ -97,7 +97,7 @@ class MP3Player:
 
     def main_loop(self):
         self.music.load(run_dir + 'start.mp3')
-        music.set_volume(self.music_volume)
+        self.music.set_volume(self.music_volume)
         print('start')
         self.music.play()
         time.sleep(3)
