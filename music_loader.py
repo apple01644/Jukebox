@@ -20,6 +20,7 @@ def get_music_list(base_dir):
                 _find_music(abs_path)
             else:
                 print('What is it', abs_path)
+        music_list_buffer.sort()
         music_list += music_list_buffer
 
     try:
