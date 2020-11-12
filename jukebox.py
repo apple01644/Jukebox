@@ -21,7 +21,7 @@ def print_except_trace():
 
 class MP3Player:
     music_list = []
-    music_volume = 0.1
+    music_volume = 1.0
     controller = None
     music = None
 
